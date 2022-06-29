@@ -38,8 +38,23 @@ export const Container = styled.div`
   grid-template-columns: 1fr;
 
   @media (min-width: 658px){
-    grid-template-columns: 1fr 1fr;
+    ${({ status }) => css`
+      grid-template-columns: ${status ? '1fr' : '1fr 1fr'};
+      justify-items: ${status ? 'center' : ''}
+    `}
   }
+`;
+
+export const ContainerLoading = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  right: 0;
 `;
 
 export const Card = styled.div`
@@ -47,6 +62,9 @@ export const Card = styled.div`
   padding: 16px;
   border-radius: 5px;
   box-shadow: 0px 8px 8px rgba(0, 0, 0, 0.1);
+
+  opacity: ${(props) => (props.orderId === props.idLoading ? '0.2' : '1')};
+  position: relative;
 
   header{
     display: flex;
@@ -90,7 +108,18 @@ export const Card = styled.div`
     font-size: 14px;
   }
 
+  img {
+    position: absolute;
+    margin: 0 auto;
+  }
+
   ${({ status }) => CardStatusVariants[status] || null}
 
 
+`;
+
+export const Loading = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;

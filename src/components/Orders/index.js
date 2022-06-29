@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Card, Container } from './styles';
+import { Card, Container, ContainerLoading } from './styles';
+
+import loadingSpinner from '../../images/loading.svg';
 
 export default function Orders() {
   const [orders, setOrders] = useState([]);
@@ -12,8 +14,9 @@ export default function Orders() {
       const json = await response.json();
       setOrders(json);
       setLoading(false);
+      setIdLoading(null);
     })();
-  }, []);
+  }, [loading]);
 
   function handleStatusChange(order) {
     return ({ target: { value } }) => {
@@ -27,58 +30,52 @@ export default function Orders() {
 
       setLoading(true);
       setIdLoading(order.id);
-
-      (async () => {
-        const response = await fetch('http://localhost:3333/orders');
-        const json = await response.json();
-        setOrders(json);
-        setLoading(false);
-      })();
     };
   }
 
   if (loading && idLoading === null) {
-    return <p>Carregando</p>;
+    return (
+      <Container status={loading}>
+        <img src={loadingSpinner} alt="Carregando..." />
+      </Container>
+    );
   }
 
   return (
     <Container>
-      {orders.map((order) => {
-        if (loading) {
-          if (order.id === idLoading) {
-            return (
-              <p key={order.id}>Carregando</p>
-            );
-          }
-        }
-        return (
-          <Card key={order.id} status={order.status} loadingUpdate>
-            <header>
-              <h3>
-                Pedido
-                {' '}
-                <strong>
-                  #
-                  {order.id}
-                </strong>
-              </h3>
-              <small>
-                MESA #
-                {order.table}
-              </small>
-            </header>
-            <p>
-              {order.description}
-            </p>
+      {orders.map((order) => (
+        <Card key={order.id} status={order.status} orderId={order.id} idLoading={idLoading}>
+          {
+            idLoading === order.id
+              ? <ContainerLoading><img src={loadingSpinner} alt="Carregando..." /></ContainerLoading>
+              : ''
 
-            <select value={order.status} onChange={handleStatusChange(order)}>
-              <option value="PENDING">Pendente</option>
-              <option value="PREPARING">Preparando</option>
-              <option value="DONE">Finalizado</option>
-            </select>
-          </Card>
-        );
-      })}
+          }
+          <header>
+            <h3>
+              Pedido
+              {' '}
+              <strong>
+                #
+                {order.id}
+              </strong>
+            </h3>
+            <small>
+              MESA #
+              {order.table}
+            </small>
+          </header>
+          <p>
+            {order.description}
+          </p>
+
+          <select value={order.status} onChange={handleStatusChange(order)}>
+            <option value="PENDING">Pendente</option>
+            <option value="PREPARING">Preparando</option>
+            <option value="DONE">Finalizado</option>
+          </select>
+        </Card>
+      ))}
 
     </Container>
   );

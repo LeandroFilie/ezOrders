@@ -47,9 +47,7 @@ export default function Orders() {
         <Card key={order.id} status={order.status} orderId={order.id} idLoading={idLoading}>
           {
             idLoading === order.id
-              ? <ContainerLoading><img src={loadingSpinner} alt="Carregando..." /></ContainerLoading>
-              : ''
-
+              && <ContainerLoading><img src={loadingSpinner} alt="Carregando..." /></ContainerLoading>
           }
           <header>
             <h3>
